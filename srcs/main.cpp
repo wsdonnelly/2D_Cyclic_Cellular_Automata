@@ -26,7 +26,7 @@ int main() {
 
 	int width;
 	int height;
-
+	int pix_size = 256;
 	SDL_GetWindowSize(window, &width, &height);
 	SDL_Event e;
 	bool quit = false;
@@ -41,6 +41,10 @@ int main() {
 				SDL_GetWindowSize(window, &width, &height);
 				std::cout << "Window resized" << std::endl;
 				std::cout << "width: " << width << " height: " << height << std::endl;
+				if (pix_size > (width / 4))
+					pix_size = width / 4;
+				if (pix_size > (height / 4))
+					pix_size = height / 4;
 			}
 		}
 		//do logic
@@ -49,12 +53,12 @@ int main() {
 		//do drawing
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 		//SDL_RenderDrawLine(renderer, 0, 0, width - 1, height - 1);
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8 ; j++) {
-				rect.x = j * (width / 8);
-				rect.y = i * (height / 8);
-				rect.w = width / 8;
-				rect.h = height / 8;
+		for (int i = 0; i < pix_size; i++) {
+			for (int j = 0; j < pix_size ; j++) {
+				rect.x = j * (width / pix_size);
+				rect.y = i * (height / pix_size);
+				rect.w = width / pix_size;
+				rect.h = height / pix_size;
 				SDL_RenderDrawRect(renderer, &rect);
 			}
 		}
