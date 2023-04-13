@@ -1,14 +1,11 @@
 #include <iostream>
 #include <SDL.h>
 
-void draw_board() {
-	
-}
 
 int main() {
 
 	SDL_Window *window = nullptr;
-	SDL_Surface *screen = nullptr;
+	SDL_Renderer *renderer = nullptr;
 
 	//init sdl FIX UP
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -22,11 +19,15 @@ int main() {
 			500,
 			500,
 			SDL_WINDOW_RESIZABLE);
-	screen = SDL_GetWindowSurface(window);
+
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+	SDL_Rect rect;
 
 	int width;
 	int height;
 
+	SDL_GetWindowSize(window, &width, &height);
 	SDL_Event e;
 	bool quit = false;
 	while (!quit)
@@ -40,10 +41,27 @@ int main() {
 				SDL_GetWindowSize(window, &width, &height);
 				std::cout << "Window resized" << std::endl;
 				std::cout << "width: " << width << " height: " << height << std::endl;
-				screen = SDL_GetWindowSurface(window);
-
 			}
 		}
+		//do logic
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+		SDL_RenderClear(renderer);
+		//do drawing
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+		//SDL_RenderDrawLine(renderer, 0, 0, width - 1, height - 1);
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8 ; j++) {
+				rect.x = j * (width / 8);
+				rect.y = i * (height / 8);
+				rect.w = width / 8;
+				rect.h = height / 8;
+				SDL_RenderDrawRect(renderer, &rect);
+			}
+		}
+
+		
+		SDL_RenderPresent(renderer);
+
 	}
 	
 	// SDL_UpdateWindowSurface(window);
