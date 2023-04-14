@@ -28,6 +28,7 @@ int main() {
 	int height;
 	int pix_size = 256;
 	SDL_GetWindowSize(window, &width, &height);
+
 	SDL_Event e;
 	bool quit = false;
 	while (!quit)
@@ -59,7 +60,8 @@ int main() {
 				rect.y = i * (height / pix_size);
 				rect.w = width / pix_size;
 				rect.h = height / pix_size;
-				SDL_RenderDrawRect(renderer, &rect);
+				
+				//SDL_RenderDrawRect(renderer, &rect);
 			}
 		}
 
