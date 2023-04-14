@@ -53,6 +53,7 @@ int main() {
 			}
 		}
 		cells.evolve(renderer);
+		SDL_RenderPresent(renderer);
 
 		//SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		//SDL_RenderClear(renderer);

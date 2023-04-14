@@ -1,3 +1,4 @@
+#include <thread>
 #include "Cca.hpp"
 
 Cca::Cca(): cell_map(250000){
@@ -49,7 +50,7 @@ void Cca::evolve(SDL_Renderer* renderer) {
 			//SDL_RenderDrawRect(renderer, &rect);
 		}
 	}
-	SDL_RenderPresent(renderer);
+	//SDL_RenderPresent(renderer);
 }
 
 
