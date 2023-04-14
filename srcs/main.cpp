@@ -1,11 +1,14 @@
 #include <iostream>
 #include <SDL.h>
+#include <ctime>
+#include "Cca.hpp"
+
 
 
 int main() {
 
-	SDL_Window *window = nullptr;
-	SDL_Renderer *renderer = nullptr;
+	SDL_Window* window = nullptr;
+	SDL_Renderer* renderer = nullptr;
 
 	//init sdl FIX UP
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -13,21 +16,24 @@ int main() {
 	else
 		std::cout << "SDL success!\n";
 
+	int width = 500;
+	int height = 500;
 	window = SDL_CreateWindow("CCA",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
-			500,
-			500,
+			width,
+			height,
 			SDL_WINDOW_RESIZABLE);
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	SDL_Rect rect;
+	//SDL_Rect rect;
 
-	int width;
-	int height;
-	int pix_size = 256;
 	SDL_GetWindowSize(window, &width, &height);
+
+	srand(time(0));
+
+	Cca cells;
 
 	SDL_Event e;
 	bool quit = false;
@@ -42,31 +48,20 @@ int main() {
 				SDL_GetWindowSize(window, &width, &height);
 				std::cout << "Window resized" << std::endl;
 				std::cout << "width: " << width << " height: " << height << std::endl;
-				if (pix_size > (width / 4))
-					pix_size = width / 4;
-				if (pix_size > (height / 4))
-					pix_size = height / 4;
-			}
-		}
-		//do logic
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-		SDL_RenderClear(renderer);
-		//do drawing
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-		//SDL_RenderDrawLine(renderer, 0, 0, width - 1, height - 1);
-		for (int i = 0; i < pix_size; i++) {
-			for (int j = 0; j < pix_size ; j++) {
-				rect.x = j * (width / pix_size);
-				rect.y = i * (height / pix_size);
-				rect.w = width / pix_size;
-				rect.h = height / pix_size;
-				
-				//SDL_RenderDrawRect(renderer, &rect);
-			}
-		}
+				cells.resize(width, height);
 
+			}
+		}
+		cells.evolve(renderer);
+
+		//SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+		//SDL_RenderClear(renderer);
+		//do drawing
 		
-		SDL_RenderPresent(renderer);
+		//SDL_RenderDrawLine(renderer, 0, 0, width - 1, height - 1);
+		
+		
+		
 
 	}
 	
