@@ -27,7 +27,7 @@ int main() {
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-	//SDL_Rect rect;
+	SDL_Rect rect;
 
 	SDL_GetWindowSize(window, &width, &height);
 
@@ -49,10 +49,13 @@ int main() {
 				std::cout << "Window resized" << std::endl;
 				std::cout << "width: " << width << " height: " << height << std::endl;
 				cells.resize(width, height);
-
 			}
+			if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_EQUALS)
+				cells.change_resolution(1);
+			if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_MINUS)
+				cells.change_resolution(-1);
 		}
-		cells.evolve(renderer);
+		cells.evolve(renderer, &rect);
 
 		//SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		//SDL_RenderClear(renderer);

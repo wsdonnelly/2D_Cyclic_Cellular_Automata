@@ -1,6 +1,10 @@
 #include "Cca.hpp"
+#include <iostream>
 
-Cca::Cca(): cell_map(250000){
+Cca::Cca(){
+	px_w = width / px_size;
+	px_h = height / px_size;
+	cell_map.resize(px_w * px_h);
 	this->init();
 }
 
@@ -11,24 +15,34 @@ void Cca::init() {
 }
 
 void Cca::resize(int w, int h) {
-	width = w;
-	height = h;
-	cell_map.resize(width * height);
+	px_w = w / px_size;
+	px_h = h / px_size;
+	cell_map.resize(px_w * px_h);
 	init();
 }
 
-void Cca::evolve(SDL_Renderer* renderer) {
+void Cca::change_resolution(int change) {
+	if (px_size > 1 && px_size * 2 < width)
+		px_size += change;
+	std::cout << "px_size: " << px_size <<std::endl;
+	px_w = width / px_size;
+	px_h = height / px_size;
+	cell_map.resize(px_w * px_h);
+	init();
+}
+
+void Cca::evolve(SDL_Renderer* renderer, SDL_Rect* rect) {
 
 	int state;
 
 	copy_cell_map = cell_map;
 
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			state = copy_cell_map[width * y + x];
+	for (int y = 0; y < px_h; y++) {
+		for (int x = 0; x < px_w; x++) {
+			state = copy_cell_map[px_w * y + x];
 			if (check_neighbors(x, y, state)) {
 				//set new cell state
-				cell_map[width * y + x] = (state + 1) % num_states;
+				cell_map[px_w * y + x] = (state + 1) % num_states;
 			}
 			//draw orig
 			if (state == 0)
@@ -44,9 +58,13 @@ void Cca::evolve(SDL_Renderer* renderer) {
 				//YELLOW
 				SDL_SetRenderDrawColor(renderer, 255, 224, 32, SDL_ALPHA_OPAQUE);
 
-			SDL_RenderDrawPoint(renderer, x, y);
-			
-			//SDL_RenderDrawRect(renderer, &rect);
+			//SDL_RenderDrawPoint(renderer, x, y);
+			rect->x = x * px_size; 
+			rect->y = y * px_size;
+			rect->w = px_size;
+			rect->h = px_size;
+
+			SDL_RenderFillRect(renderer, rect);
 		}
 	}
 	SDL_RenderPresent(renderer);
@@ -58,12 +76,12 @@ bool Cca::check_neighbors(int x, int y, int state) {
 	//if == threshold change cell to i + 1;
 	int count = 0;
 	int left, right, up, down;
-	int i = x + (y * width);
+	int i = x + (y * px_w);
 
-	left = (x == 0) ? width - 1 : - 1;
-	right = (y == width - 1) ? -(width - 1): 1;
-	up = (y == 0) ? (width * (height - 1)) : -width;
-	down = (y == height - 1) ? -(width * (height - 1)) : width;
+	left = (x == 0) ? px_w - 1 : - 1;
+	right = (y == px_w - 1) ? -(px_w - 1): 1;
+	up = (y == 0) ? (px_w * (px_h - 1)) : -px_w;
+	down = (y == px_h - 1) ? -(px_w * (px_h - 1)) : px_w;
 
 	int target = (state + 1) % num_states;
 
