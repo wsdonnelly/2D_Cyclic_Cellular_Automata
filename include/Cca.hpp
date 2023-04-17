@@ -3,8 +3,8 @@
 
 class Cca {
 	private:
-		std::vector<int> cell_map;
-		std::vector<int> copy_cell_map;
+		std::vector<char> cell_map;
+		std::vector<char> copy_cell_map;
 		int threshold = 3;
 		int num_states = 4;
 		int width = 500;
