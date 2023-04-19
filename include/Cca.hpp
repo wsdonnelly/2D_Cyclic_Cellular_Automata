@@ -13,7 +13,10 @@ class Cca {
 		void init();
 	public:
 		Cca();
-		void evolve(SDL_Renderer* renderer);
+		void copy_map() {copy_cell_map = cell_map;}
+		void evolve(int tid);
+		void draw_map(SDL_Renderer* renderer);
 		bool check_neighbors(int x, int y, int state);
 		void resize(int w, int h);
+		friend void update(Cca& cells, SDL_Renderer* renderer, int tid);
 };

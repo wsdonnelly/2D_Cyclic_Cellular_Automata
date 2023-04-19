@@ -1,6 +1,6 @@
 NAME = cca
 CC = g++
-FLAGS = --std=c++11 #-Wall -Werror
+FLAGS = --std=c++11 -Wall -Werror -Wextra
 SRCS = srcs/main.cpp srcs/Cca.cpp
 OBJS_DIR = objs/
 OBJS = $(addprefix $(OBJS_DIR), $(notdir $(SRCS:.cpp=.o)))

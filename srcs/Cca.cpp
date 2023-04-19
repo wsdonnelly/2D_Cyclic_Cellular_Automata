@@ -18,20 +18,25 @@ void Cca::resize(int w, int h) {
 	init();
 }
 
-void Cca::evolve(SDL_Renderer* renderer) {
+void Cca::evolve(int tid) {
 
 	int state;
 
-	copy_cell_map = cell_map;
-
-	for (int y = 0; y < height; y++) {
+	for (int y = tid; y < height; y += 4) {
 		for (int x = 0; x < width; x++) {
 			state = copy_cell_map[width * y + x];
 			if (check_neighbors(x, y, state)) {
 				//set new cell state
 				cell_map[width * y + x] = (state + 1) % num_states;
 			}
-			//draw orig
+		}
+	}
+}
+
+void Cca::draw_map(SDL_Renderer* renderer) {
+	for (int y = 0; y < height; ++y)
+		for(int x = 0; x < width; ++x) {
+			int state = copy_cell_map[width * y + x];
 			if (state == 0)
 			//RED
 				SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
@@ -44,13 +49,9 @@ void Cca::evolve(SDL_Renderer* renderer) {
 			else if (state == 3)
 				//YELLOW
 				SDL_SetRenderDrawColor(renderer, 255, 224, 32, SDL_ALPHA_OPAQUE);
-
 			SDL_RenderDrawPoint(renderer, x, y);
-			
-			//SDL_RenderDrawRect(renderer, &rect);
-		}
 	}
-	//SDL_RenderPresent(renderer);
+	SDL_RenderPresent(renderer);
 }
 
 
@@ -67,6 +68,7 @@ bool Cca::check_neighbors(int x, int y, int state) {
 	down = (y == height - 1) ? -(width * (height - 1)) : width;
 
 	int target = (state + 1) % num_states;
+
 
 	if (copy_cell_map[i + left] == target)
 		count++;
