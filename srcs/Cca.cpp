@@ -8,6 +8,15 @@ void Cca::init() {
 	//fill cell_map with random vals
 	for (auto& it : cell_map)
 		it = rand() % num_states;
+	neighbors.resize(8);
+	neighbors[0] = 0;
+	neighbors[1] = 1;
+	neighbors[2] = 2;
+	neighbors[3] = width;
+	neighbors[4] = width + 2;
+	neighbors[5] = width * 2;
+	neighbors[6] = width * 2 + 1;
+	neighbors[7] = width  * 2 + 2;
 }
 
 void Cca::resize(int w, int h) {
@@ -26,7 +35,7 @@ void Cca::evolve(SDL_Renderer* renderer) {
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 			state = copy_cell_map[width * y + x];
-			if (check_neighbors(x, y, state)) {
+			if (x > 0 && x < width - 1 && y > 0 && y < height -1 && check_neighbors(x, y, state)) {
 				//set new cell state
 				cell_map[width * y + x] = (state + 1) % num_states;
 			}
@@ -57,33 +66,15 @@ bool Cca::check_neighbors(int x, int y, int state) {
 	//num of neighbors with state + 1
 	//if == threshold change cell to i + 1;
 	int count = 0;
-	int left, right, up, down;
-	int i = x + (y * width);
-
-	left = (x == 0) ? width - 1 : - 1;
-	right = (y == width - 1) ? -(width - 1): 1;
-	up = (y == 0) ? (width * (height - 1)) : -width;
-	down = (y == height - 1) ? -(width * (height - 1)) : width;
+	int i = x + (y * width) - (width + 1);
 
 	int target = (state + 1) % num_states;
 
-	if (copy_cell_map[i + left] == target)
-		count++;
-	if (copy_cell_map[i + right] == target)
-		count++;
-	if (copy_cell_map[i + up] == target)
-		count++;
-	if (copy_cell_map[i + down] == target)
-		count++;
-	if (copy_cell_map[i + (up + left)] == target)
-		count++;
-	if (copy_cell_map[i + (up + right)] == target)
-		count++;
-	if (copy_cell_map[i + (down + left)] == target)
-		count++;
-	if (copy_cell_map[i + (down + right)] == target)
-		count++;
-	if (count >= threshold)
-		return true;
+	for (auto distance: neighbors) {
+		if (copy_cell_map[i + distance] == target)
+			++count;
+			if (count == threshold)
+				return (true);
+	}
 	return false;
 }
