@@ -1,4 +1,5 @@
 #include "Cca.hpp"
+#include <algorithm>
 
 Cca::Cca(): cell_map(250000){
 	this->init();
@@ -6,8 +7,30 @@ Cca::Cca(): cell_map(250000){
 
 void Cca::init() {
 	//fill cell_map with random vals
-	for (auto& it : cell_map)
-		it = rand() % num_states;
+	//fill with zeros
+	std::fill(cell_map.begin(), cell_map.end(), 0);
+	
+	for (int i = 0; i < cell_map.size(); ++i) {
+		int state = rand() % num_states;
+		cell_map[i] += state;
+		int x = i % width;
+		int y = i / width;
+		
+		int left = (x == 0) ? width - 1 : - 1;
+		int right = (y == width - 1) ? -(width - 1): 1;
+		int up = (y == 0) ? (width * (height - 1)) : -width;
+		int down = (y == height - 1) ? -(width * (height - 1)) : width;
+
+		cell_map[i + up] += (1 << (state * 3 + 2));
+		cell_map[i + down] += (1 << (state * 3 + 2));
+		cell_map[i + left] += (1 << (state * 3 + 2));
+		cell_map[i + right] += (1 << (state * 3 + 2));
+		cell_map[i + (up + left)] += (1 << (state * 3 + 2));
+		cell_map[i + (up + right)] += (1 << (state * 3 + 2));
+		cell_map[i + (down + left)] += (1 << (state * 3 + 2));
+		cell_map[i + (down + right)] += (1 << (state * 3 + 2));
+	}
+
 }
 
 void Cca::resize(int w, int h) {
@@ -16,20 +39,29 @@ void Cca::resize(int w, int h) {
 	cell_map.resize(width * height);
 	init();
 }
-
+#include <iostream>
 void Cca::evolve(SDL_Renderer* renderer) {
 
 	int state;
-
 	copy_cell_map = cell_map;
 
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
-			state = copy_cell_map[width * y + x];
-			if (check_neighbors(x, y, state)) {
-				//set new cell state
-				cell_map[width * y + x] = (state + 1) % num_states;
+			int idx = width * y + x;
+			state = (copy_cell_map[idx] & 0x03);
+			if (((copy_cell_map[idx] >> (((state + 1) % num_states) * 3 + 2)) & 0x07 ) >= threshold){
+			
+				if (state < 3)
+					cell_map[idx] += 0x01;
+				else
+					cell_map[idx] ^= 0x03;
+				update_neighbors(x, y, state);
 			}
+
+			// if (check_neighbors(x, y, state)) {
+			// 	//set new cell state
+			// 	cell_map[width * y + x] = (state + 1) % num_states;
+			// }
 			//draw orig
 			if (state == 0)
 			//RED
@@ -53,10 +85,10 @@ void Cca::evolve(SDL_Renderer* renderer) {
 }
 
 
-bool Cca::check_neighbors(int x, int y, int state) {
+void Cca::update_neighbors(int x, int y, int state) {
 	//num of neighbors with state + 1
 	//if == threshold change cell to i + 1;
-	int count = 0;
+	
 	int left, right, up, down;
 	int i = x + (y * width);
 
@@ -65,25 +97,26 @@ bool Cca::check_neighbors(int x, int y, int state) {
 	up = (y == 0) ? (width * (height - 1)) : -width;
 	down = (y == height - 1) ? -(width * (height - 1)) : width;
 
-	int target = (state + 1) % num_states;
+	//int target = (state + 1) % num_states;
 
-	if (copy_cell_map[i + left] == target)
-		count++;
-	if (copy_cell_map[i + right] == target)
-		count++;
-	if (copy_cell_map[i + up] == target)
-		count++;
-	if (copy_cell_map[i + down] == target)
-		count++;
-	if (copy_cell_map[i + (up + left)] == target)
-		count++;
-	if (copy_cell_map[i + (up + right)] == target)
-		count++;
-	if (copy_cell_map[i + (down + left)] == target)
-		count++;
-	if (copy_cell_map[i + (down + right)] == target)
-		count++;
-	if (count >= threshold)
-		return true;
-	return false;
+	cell_map[i + up] -= (1 << (state * 3 + 2));
+	cell_map[i + down] -= (1 << (state * 3 + 2));
+	cell_map[i + left] -= (1 << (state * 3 + 2));
+	cell_map[i + right] -= (1 << (state * 3 + 2));
+	cell_map[i + (up + left)] -= (1 << (state * 3 + 2));
+	cell_map[i + (up + right)] -= (1 << (state * 3 + 2));
+	cell_map[i + (down + left)] -= (1 << (state * 3 + 2));
+	cell_map[i + (down + right)] -= (1 << (state * 3 + 2));
+	
+	int new_state = (state + 1) % num_states;
+
+	cell_map[i + up] += (1 << (new_state * 3 + 2));
+	cell_map[i + down] += (1 << (new_state * 3 + 2));
+	cell_map[i + left] += (1 << (new_state * 3 + 2));
+	cell_map[i + right] += (1 << (new_state * 3 + 2));
+	cell_map[i + (up + left)] += (1 << (new_state * 3 + 2));
+	cell_map[i + (up + right)] += (1 << (new_state * 3 + 2));
+	cell_map[i + (down + left)] += (1 << (new_state * 3 + 2));
+	cell_map[i + (down + right)] += (1 << (new_state * 3 + 2));
+	
 }
