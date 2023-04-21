@@ -5,7 +5,6 @@ Cca::Cca(): cell_map(250000){
 }
 
 void Cca::init() {
-	//fill cell_map with random vals
 	for (auto& it : cell_map)
 		it = rand() % num_states;
 }
@@ -27,12 +26,10 @@ void Cca::evolve(SDL_Renderer* renderer) {
 		for (int x = 0; x < width; x++) {
 			state = copy_cell_map[width * y + x];
 			if (check_neighbors(x, y, state)) {
-				//set new cell state
 				cell_map[width * y + x] = (state + 1) % num_states;
 			}
-			//draw orig
 			if (state == 0)
-			//RED
+				//RED
 				SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
 			else if (state == 1)
 				//GREEN
@@ -43,10 +40,7 @@ void Cca::evolve(SDL_Renderer* renderer) {
 			else if (state == 3)
 				//YELLOW
 				SDL_SetRenderDrawColor(renderer, 255, 224, 32, SDL_ALPHA_OPAQUE);
-
 			SDL_RenderDrawPoint(renderer, x, y);
-			
-			//SDL_RenderDrawRect(renderer, &rect);
 		}
 	}
 	SDL_RenderPresent(renderer);
