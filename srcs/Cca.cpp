@@ -1,6 +1,6 @@
 #include "Cca.hpp"
 
-Cca::Cca(): cell_map(250000){
+Cca::Cca(): cell_map(250000), neighbors(8){
 	this->init();
 }
 
@@ -56,7 +56,7 @@ void Cca::evolve(SDL_Renderer* renderer) {
 bool Cca::check_neighbors(int x, int y, int state) {
 	//num of neighbors with state + 1
 	//if == threshold change cell to i + 1;
-	int count = 0;
+	
 	int left, right, up, down;
 	int i = x + (y * width);
 
@@ -67,23 +67,46 @@ bool Cca::check_neighbors(int x, int y, int state) {
 
 	int target = (state + 1) % num_states;
 
-	if (copy_cell_map[i + left] == target)
-		count++;
-	if (copy_cell_map[i + right] == target)
-		count++;
-	if (copy_cell_map[i + up] == target)
-		count++;
-	if (copy_cell_map[i + down] == target)
-		count++;
-	if (copy_cell_map[i + (up + left)] == target)
-		count++;
-	if (copy_cell_map[i + (up + right)] == target)
-		count++;
-	if (copy_cell_map[i + (down + left)] == target)
-		count++;
-	if (copy_cell_map[i + (down + right)] == target)
-		count++;
-	if (count >= threshold)
-		return true;
-	return false;
+	neighbors[0] = i + left;
+	neighbors[1] = i + right;
+	neighbors[2] = i + up;
+	neighbors[3] = i + down;
+	neighbors[4] = i + (up + left);
+	neighbors[5] = i + (up + right);
+	neighbors[6] = i + (down + left);
+	neighbors[7] = i + (down + right);
+
+	int idx = 7;
+	int count = 0;
+	//while ((8 - idx) >= (threshold - count)) {
+	while (idx + 1 >= threshold - count) {
+	//while (idx < 8) {
+		if (copy_cell_map[neighbors[idx]] == target) {
+			//++count;
+			if (++count == threshold)
+				return (true);
+		}
+		--idx;
+	}
+	return (false);
+	
+	// if (copy_cell_map[i + left] == target)
+	// 	count++;
+	// if (copy_cell_map[i + right] == target)
+	// 	count++;
+	// if (copy_cell_map[i + up] == target)
+	// 	count++;
+	// if (copy_cell_map[i + down] == target)
+	// 	count++;
+	// if (copy_cell_map[i + (up + left)] == target)
+	// 	count++;
+	// if (copy_cell_map[i + (up + right)] == target)
+	// 	count++;
+	// if (copy_cell_map[i + (down + left)] == target)
+	// 	count++;
+	// if (copy_cell_map[i + (down + right)] == target)
+	// 	count++;
+	// if (count >= threshold)
+	// 	return true;
+	// return false;
 }
