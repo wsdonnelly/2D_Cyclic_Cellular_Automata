@@ -14,20 +14,22 @@ void Cca::init() {
 		it = rand() % num_states;
 }
 
-void Cca::resize(int w, int h) {
-	px_w = w / px_size;
-	px_h = h / px_size;
+void Cca::resize_win() {
+	px_w = width / px_size;
+	px_h = height/ px_size;
 	cell_map.resize(px_w * px_h);
 	init();
 }
 
 void Cca::change_resolution(int change) {
-	if (px_size > 1 && px_size * 2 < width)
+	if (change > 0 && px_size * 2 < width) {
 		px_size += change;
+	}
+	else if (change < 0 && px_size > 1)
+		px_size += change;
+
 	std::cout << "px_size: " << px_size <<std::endl;
-	px_w = width / px_size;
-	px_h = height / px_size;
-	cell_map.resize(px_w * px_h);
+	resize_win();
 	init();
 }
 

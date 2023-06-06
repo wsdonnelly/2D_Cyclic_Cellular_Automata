@@ -37,7 +37,7 @@ int main() {
 
 	SDL_Event e;
 	bool quit = false;
-	while (!quit)
+	while (!quit) 
 	{
 		while (SDL_PollEvent(&e)) {
 			if (e.type == SDL_QUIT){
@@ -45,10 +45,11 @@ int main() {
 			}
 			//if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED) {
 			if (e.window.event == SDL_WINDOWEVENT_RESIZED) {
-				SDL_GetWindowSize(window, &width, &height);
+				SDL_GetWindowSize(window, &cells.width, &cells.height);
 				std::cout << "Window resized" << std::endl;
-				std::cout << "width: " << width << " height: " << height << std::endl;
-				cells.resize(width, height);
+				std::cout << "width: " << cells.width << " height: " << cells.height << std::endl;
+				//cells.resize_win(cellswidth, height);
+				cells.resize_win();
 			}
 			if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_EQUALS)
 				cells.change_resolution(1);
@@ -56,15 +57,13 @@ int main() {
 				cells.change_resolution(-1);
 		}
 		cells.evolve(renderer, &rect);
-
+		if (cells.px_size > 1)
+			SDL_Delay(cells.px_size);
 		//SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 		//SDL_RenderClear(renderer);
 		//do drawing
 		
 		//SDL_RenderDrawLine(renderer, 0, 0, width - 1, height - 1);
-		
-		
-		
 
 	}
 	
